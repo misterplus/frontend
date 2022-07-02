@@ -1,24 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
 
 function App() {
+  const [img, setImg] = useState<string>();
+  const [base64, setBase64] = useState<string>();
+
+  const onFileUploaded = (e: any) => {
+    let file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.addEventListener(
+        "load",
+        function () {
+          if (reader.result != null) {
+            setImg(reader.result.toString());
+            setBase64(reader.result.toString().split("base64,")[1]);
+          }
+        },
+        false
+      );
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const onClick = () => {
+    console.log(img);
+    console.log(base64);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type="file" onChange={onFileUploaded} />
+      <button onClick={onClick}>show base64</button>
     </div>
   );
 }
