@@ -52,13 +52,25 @@ function App() {
 
   const onFormSubmit = async (e: any) => {
     e.preventDefault();
-    const data = {
+    if (e.target[1].value !== "" && (e.target[1].value > 1 || e.target[1].value < 0)) {
+      alert("阈值必须在0-1间！");
+      return;
+    }
+    else if (e.target[2].value !== "" && e.target[2].value < 1) {
+      alert("个数必须大于等于1！");
+      return;
+    }
+    const data : any = {
       feed: {
-        image: base64,
-        threshold: Number(e.target[1].value),
-        size: Number(e.target[2].value),
+        image: base64
       },
     };
+    if (e.target[1].value !== "") {
+      data.feed.size = Number(e.target[1].value);
+    }
+    if (e.target[2].value !== "") {
+      data.feed.size = Number(e.target[2].value);
+    }
     const res = await fetch(
       "http://192.168.216.1:9393/FaceDetection/prediction",
       {
