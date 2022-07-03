@@ -1,8 +1,21 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 
 function App() {
   const [base64, setBase64] = useState<string>();
+  const [scale, setScale] = useState<number>(1);
+  const [baseX, setBaseX] = useState<number>(0);
+  const [baseY, setBaseY] = useState<number>(0);
+  function scaleToFit(canvas: any, img: any) {
+    const c = canvas.getContext("2d");
+    const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+    const x = (canvas.width / 2) - (img.width / 2) * scale;
+    const y = (canvas.height / 2) - (img.height / 2) * scale;
+    c.drawImage(img, x, y, img.width * scale, img.height * scale);
+    setScale(scale);
+    setBaseX(x);
+    setBaseY(y);
+  };
   const onFileUploaded = (e: any) => {
     let file = e.target.files[0];
     if (file) {
@@ -13,13 +26,13 @@ function App() {
           if (reader.result != null) {
             setBase64(reader.result.toString().split("base64,")[1]);
             const canvas: any = document.getElementById("canvas");
-            canvas.height = canvas.height;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
             if (canvas != null) {
               const image = new Image();
               image.onload = function () {
-                const c = canvas.getContext("2d");
-                c.drawImage(this, 0, 0);
-              };
+                scaleToFit(canvas, this);
+              }
               image.src = reader.result.toString();
             }
           }
@@ -39,7 +52,6 @@ function App() {
         size: Number(e.target[2].value),
       },
     };
-    console.log(data);
     const res = await fetch(
       "http://192.168.216.1:9393/FaceDetection/prediction",
       {
@@ -54,13 +66,14 @@ function App() {
     const result = json["result"];
     const canvas: any = document.getElementById("canvas");
     const c = canvas.getContext("2d");
+    c.translate(baseX, baseY);
     for (let index = 0; index < result.size; index++) {
       const face = result.faces[index];
       const threshold: number = Math.floor(face[0] * 100) / 100;
-      const x: number = face[1];
-      const y: number = face[2];
-      const width: number = face[3] - x;
-      const height: number = face[4] - y;
+      const x: number = face[1] * scale;
+      const y: number = face[2] * scale;
+      const width: number = face[3] * scale - x;
+      const height: number = face[4] * scale - y;
 
       c.strokeStyle = "rgb(255, 255, 0)";
       c.lineWidth = "3";
@@ -81,12 +94,12 @@ function App() {
       <form onSubmit={onFormSubmit}>
         <input type="file" onChange={onFileUploaded} />
         <label>Threshold</label>
-        <input name="threshold" />
+        <input />
         <label>Size</label>
-        <input name="size" />
-        <input type="submit" />
+        <input />
+        <input type="submit" value="检测" />
       </form>
-      <canvas id="canvas" width="1920" height="1920"></canvas>
+      <canvas id="canvas" width="1280" height="720"></canvas>
     </div>
   );
 }
