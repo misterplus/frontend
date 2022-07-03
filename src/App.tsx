@@ -6,16 +6,22 @@ function App() {
   const [scale, setScale] = useState<number>(1);
   const [baseX, setBaseX] = useState<number>(0);
   const [baseY, setBaseY] = useState<number>(0);
+  const [img, setImg] = useState<any>();
   function scaleToFit(canvas: any, img: any) {
     const c = canvas.getContext("2d");
-    const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-    const x = (canvas.width / 2) - (img.width / 2) * scale;
-    const y = (canvas.height / 2) - (img.height / 2) * scale;
+    c.restore();
+    const scale = Math.min(
+      canvas.width / img.width,
+      canvas.height / img.height
+    );
+    const x = canvas.width / 2 - (img.width / 2) * scale;
+    const y = canvas.height / 2 - (img.height / 2) * scale;
     c.drawImage(img, x, y, img.width * scale, img.height * scale);
+    c.save();
     setScale(scale);
     setBaseX(x);
     setBaseY(y);
-  };
+  }
   const onFileUploaded = (e: any) => {
     let file = e.target.files[0];
     if (file) {
@@ -32,8 +38,9 @@ function App() {
               const image = new Image();
               image.onload = function () {
                 scaleToFit(canvas, this);
-              }
+              };
               image.src = reader.result.toString();
+              setImg(image);
             }
           }
         },
@@ -66,6 +73,7 @@ function App() {
     const result = json["result"];
     const canvas: any = document.getElementById("canvas");
     const c = canvas.getContext("2d");
+    img.onload();
     c.translate(baseX, baseY);
     for (let index = 0; index < result.size; index++) {
       const face = result.faces[index];
