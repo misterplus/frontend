@@ -91,11 +91,11 @@ function App() {
 
   return (
     <div className="App">
-      <form onSubmit={onFormSubmit}>
+      <form onSubmit={onFormSubmit} className="form">
         <input type="file" onChange={onFileUploaded} />
-        <label>Threshold</label>
+        <label>阈值：</label>
         <input />
-        <label>Size</label>
+        <label>最大个数：</label>
         <input />
         <input type="submit" value="检测" />
       </form>
