@@ -66,7 +66,7 @@ function App() {
       },
     };
     if (e.target[1].value !== "") {
-      data.feed.size = Number(e.target[1].value);
+      data.feed.threshold = Number(e.target[1].value);
     }
     if (e.target[2].value !== "") {
       data.feed.size = Number(e.target[2].value);
