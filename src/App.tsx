@@ -114,9 +114,9 @@ function App() {
       <form onSubmit={onFormSubmit} className="form">
         <input type="file" onChange={onFileUploaded} />
         <label>阈值：</label>
-        <input />
+        <input type="number" min="0" max="1" step="0.01" />
         <label>最大个数：</label>
-        <input />
+        <input type="number" min="1" />
         <input type="submit" value="检测" />
       </form>
       <canvas id="canvas" width="1280" height="720"></canvas>
